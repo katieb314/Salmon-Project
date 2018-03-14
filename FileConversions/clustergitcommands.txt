@@ -1,0 +1,4 @@
+#Here are some commands for using git in the cluster
+#git add <filename> adds your files to git
+#git commit -m "some comments" commits your changes
+#git push will push to the shared repository online
