@@ -8,3 +8,4 @@ biomap+
   geom_point(aes(x = Longitude, y= Latitude) , data= LocaData, color = "yellow", size = 2, alpha= 1)
   
 
+
