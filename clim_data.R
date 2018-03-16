@@ -10,6 +10,10 @@ LocaData2 <- subset(LocaData, select=c(Region, Longitude, Latitude)) #making new
 head(LocaData2) #checking that it worked
 View(LocaData2)
 
+library(data.table)
+setDT(LocaData2)
+avgLong <- LocaData2[, mean(Longitude), by = Region]
+avgLat <- LocaData2[, mean(Latitude), by = Region]
 
 
 install.packages("raster") #installing package to use worldclim data
@@ -37,3 +41,21 @@ head(df)
 
 plot(rast$CurTemp, xlim=c(-105,-50), ylim=c(40,60), 1, main="", xaxt="n", yaxt="n", legend=F)
 points(cbind(LocaData2$Longitude, LocaData2$Latitude), col="#003F91FF", cex=1.5, pch=16)
+
+#Making another dataset for lats and longs of the regions, not just the individual rivers:
+
+coords2<- data.frame(x=avgLong$V1, y=avgLat$V1)
+
+points2<- SpatialPoints(coords2, proj4string = rast@crs)
+
+values <- extract(rast, points2)
+
+df2 <- cbind.data.frame(coordinates(points2), values)
+head(df2)
+
+plot(rast$CurTemp, xlim=c(-100,-50), ylim=c(40,60), 1, main="", xaxt="n", yaxt="n", legend=F)
+points(cbind(avgLong$V1, avgLat$V1), col="magenta", cex=1.5, pch=5)
+points(cbind(avgLong$V1, avgLat$V1), col="magenta", cex=1, pch=5)
+
+#now I want to make a dataframe including lat, long, region, and temp values
+cbind.data.frame(df2, avgLat$Region)
