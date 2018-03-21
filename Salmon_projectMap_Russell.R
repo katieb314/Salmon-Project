@@ -25,3 +25,7 @@ biomap+
     geom_point(aes(x = longitude, y= latitude) , data= LocaData2, color = "red", size = 4, alpha= 1)+
     geom_point(aes(x = Longitude, y= Latitude) , data= LocaData, color = "yellow", size = 1, alpha= 1)
 
+  
+  ??geocode
+geocode(c("jasper", "toronto") output=( "latlona"))
+geocodeQueryCheck()
