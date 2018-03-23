@@ -12,7 +12,7 @@ PopRange <- c(min(LocaData$Longitude) ,
 biomap <- ggmap(get_map(location=PopRange, source = "google", maptype = "satellite", zoom = 5))
 # populate our map with our sampling sites
 biomap+
-  geom_point(aes(x = Longitude, y= Latitude) , data= LocaData, color = "yellow", size = 2, alpha= 0.8)
+  geom_point(aes(x = Longitude, y= Latitude) , data= LocaData, color = "yellow", size = 2, alpha= 1)
 
 # try and add labells??
   geom_text(aes(x = Longitude, y= Latitude), label=LocaData$Name, data= LocaData)
