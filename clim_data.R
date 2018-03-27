@@ -25,6 +25,7 @@ rast <- rast[[c(1)]] #taking out only the mean annual temperature variable (take
 rast
 names(rast) <- "CurTemp"
 
+
 coords <- data.frame(x=LocaData2$Longitude, y=LocaData2$Latitude) #making dataframe for my lat and long
 
 points <- SpatialPoints(coords, proj4string = rast@crs) #determining the datapoints by specifying my lat and long
@@ -53,9 +54,37 @@ values <- extract(rast, points2)
 df2 <- cbind.data.frame(coordinates(points2), values)
 head(df2)
 
-plot(rast$CurTemp, xlim=c(-100,-50), ylim=c(40,60), 1, main="", xaxt="n", yaxt="n", legend=F)
+projection(rast)=CRS("+init=epsg:4326")
+
+plot(rast$CurTemp, xlim=c(-80,-50), ylim=c(40,65), 1, main="", legend=F, xlab="Latitude (Degrees)", ylab="Longitude (Degrees)", asp=0.75)
 points(cbind(avgLong$V1, avgLat$V1), col="magenta", cex=1.5, pch=5)
 points(cbind(avgLong$V1, avgLat$V1), col="magenta", cex=1, pch=5)
 
+png("BIO812ProposalMap2.png")
+plot(rast$CurTemp, xlim=c(-80,-50), ylim=c(35,65), 1, main="", legend=F, xlab="Latitude (Degrees)", ylab="Longitude (Degrees)", asp=1.02)
+points(cbind(avgLong$V1, avgLat$V1), col="magenta", cex=1.5, pch=5)
+points(cbind(avgLong$V1, avgLat$V1), col="magenta", cex=1, pch=5)
+dev.off()
+
 #now I want to make a dataframe including lat, long, region, and temp values
-cbind.data.frame(df2, avgLat$Region)
+curtemp_df <- cbind.data.frame(df2, avgLat$Region)
+
+pop_df <- cbind.data.frame(df, LocaData$Name)
+head(pop_df)
+
+
+rast2 <- getData("CMIP5", var="bio", res=10, rcp=85, model="BC", year=50) #used rcp=85 based on Sanford et al. 2014, used model=BC based on Miao et al. 2014
+rast2 <- rast2[[c(1)]]
+names(rast2) <- "futTemp"
+values2 <- extract(rast2, points)
+View(values2)
+
+futcurtemp_df <-cbind.data.frame(curtemp_df, values2)
+
+rast3 <- getData("worldclim", var="bio", res=10) #making raster object, using biological variables, lowest resolution
+rast3 <- rast3[[c("mb1")]] #taking out only the mean annual temperature variable (taken b/w 1950-2000)
+rast3
+names(rast3) <- "pastTemp"
+
+install.packages("sdmpredictors")
+library(sdmpredictors)
