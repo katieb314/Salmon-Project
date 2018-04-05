@@ -124,3 +124,7 @@ for (i in 1:nrow(pastClim3)) { #making a loop to populate the pastTemp column wi
 
 LocaData_rounded$FutTemp <- FutTemp
 LocaData_rounded$CurTemp <- CurTemp
+
+#now turning it into a csv
+
+write.csv(LocaData_rounded, file="ClimTrendData.csv")
