@@ -1,0 +1,14 @@
+# it's very simple and straightforward to download programs into the cluster!
+
+# first get the download using the command wget
+wget http://www.cmpg.unibe.ch/software/PGDSpider/PGDSpider_2.1.1.3.zip
+
+#then you need to unzip the zip file
+unzip PGDSpider_2.1.1.3.zip 
+
+#next I removed the zip file
+rm PGDSpider_2.1.1.3.zip
+
+#this is the code that you use to execute the program
+#however, I chose to do these within bash scripts that are saved in this folder
+java -Xmx1024m -Xms512M -jar PGDSpider2-cli.jar
