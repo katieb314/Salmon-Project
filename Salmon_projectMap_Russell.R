@@ -5,16 +5,16 @@ library(dplyr)
 
 # create the range for Google maps to make a basemap for our salmon sites
 PopRange <- c(min(LocaData$Longitude) ,
-              min(LocaData$Latitude ) ,
+              min(LocaData$Latitude ) +9 ,
               max(LocaData$Longitude) ,
-              max(LocaData$Latitude) )
+              max(LocaData$Latitude) -6)
 # create the basemap and store it in r as a object using google's satellite
-biomap <- ggmap(get_map(location=PopRange, source = "google", maptype = "satellite", zoom = 5))
+biomap <- ggmap(get_map(location=PopRange, source = "google", maptype = "hybrid", zoom = 5))
 # populate our map with our sampling sites
 biomap+
   geom_point(aes(x = Longitude, y= Latitude) , data= LocaData, color = "yellow", size = 2, alpha= 1)
 
-# try and add labells??
+3# try and add labells??
   geom_text(aes(x = Longitude, y= Latitude), label=LocaData$Name, data= LocaData)
  
             

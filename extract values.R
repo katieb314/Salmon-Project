@@ -36,5 +36,6 @@ HWEdat$`HWE values` <- HWEvalues$V17 #overall HWE p values into last column
 
 head(HWEdat) #checking to make sure it all worked
 
+
 write.csv(HWEdat, file="HWEdat.csv") #writing into a new datafile that we can use for more analyses
 
