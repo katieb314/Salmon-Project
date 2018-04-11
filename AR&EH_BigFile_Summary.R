@@ -45,7 +45,7 @@ Range <- c(ARRange, EHRange)
 ResultsFrame <- data.frame(Mean, Min, Max, Range)
 
 #Adding row names
-rownames(ResultsFrame) <- c("Allelic Richness", "Expected Heterozygosity")
+rownames(ResultsFrame) <- c("Allelic Richness(BigFile)", "Expected Heterozygosity(BigFile")
 
 View(ResultsFrame)
 

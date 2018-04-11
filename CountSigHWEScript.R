@@ -14,6 +14,8 @@ GenDat <- read.csv("HWEdat.csv")
 
 HWEDat <- GenDat$HWE.values
 
+HWEDat
+
 #What we want is to create a loop and counter that will count how many significant values we have
 #Signficant means less than 0.05
 
@@ -25,7 +27,21 @@ for (i in HWEDat) {
 }
 NotAtEquil <- count
 
-
-NotAtEquil
+print(NotAtEquil)
 #This value was 44
+
+'''
+We want to know what proportion of populations was not at Hardy-Weinberg equilibrium
+This means we want to know how many out of the total number of populations had a signficant
+p-value, which we just counted- 44.
+'''
+
+#Count the length of the vector HWEDat and save as TotalPops
+
+TotalPops <- length(HWEDat)
+
+#Calculate the percentage of populations not at equilibrium
+
+PercentPops <- ((NotAtEquil/TotalPops)*100)
+
 
