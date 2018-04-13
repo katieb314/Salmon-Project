@@ -1,0 +1,74 @@
+"","River","Latitude","Longitude","pastTemp","FutTemp","CurTemp","Status","mapcode"
+"1","Biscay Bay River",46.75,-52.75,7.73086314,6.1,4.6,"Threatened",1
+"2","Stoney Brook",46.75,-52.75,7.73086314,6.1,4.6,"Threatened",2
+"3","Northeast Brook",46.75,-52.75,7.73086314,6.1,4.5,"Threatened",3
+"4","Northwest Brook",46.75,-52.75,7.73086314,6.1,4.5,"Threatened",4
+"5","St. Shott’s River",46.75,-52.75,7.73086314,6.4,4.9,"Threatened",5
+"6","Big Barachois River",47.75,-52.75,7.00556429,6.5,5,"Threatened",6
+"7","Little Salmonier River",47.75,-52.75,7.00556429,6.5,5,"Threatened",7
+"8","North Harbour",47.75,-52.75,7.00556429,6.6,5,"Threatened",8
+"9","Rocky River",47.75,-52.75,7.00556429,6.6,5,"Threatened",9
+"10","Salmonier River",47.75,-52.75,7.00556429,6.3,4.7,"Threatened",10
+"11","Northeast River",47.75,-52.75,7.00556429,6.7,5,"Threatened",11
+"12","Southeast River",47.75,-52.75,7.00556429,6.7,5,"Threatened",12
+"13","Bay du Nord River",47.75,-54.75,6.55067163,6.3,4.5,"Threatened",13
+"14","Garnish River",47.75,-54.75,6.55067163,6.7,5,"Threatened",14
+"15","Grand Bank Brook",47.75,-54.75,6.55067163,6.8,5.2,"Threatened",15
+"16","Long Harbour River",47.75,-54.75,6.55067163,6.3,4.5,"Threatened",16
+"17","Southwest Brook",47.75,-54.75,6.55067163,6.1,4.3,"Threatened",17
+"18","Simms Brook Fortune Bay",47.75,-52.75,7.00556429,6.5,4.9,"Threatened",18
+"19","Old Bay Brook",47.75,-52.75,7.00556429,6.5,4.9,"Threatened",19
+"20","Conne River",47.75,-52.75,7.00556429,6.5,4.8,"Threatened",20
+"21","Conne River Mill Brook",47.75,-52.75,7.00556429,6.4,4.7,"Threatened",21
+"22","Little River",47.75,-52.75,7.00556429,6.4,4.7,"Threatened",22
+"23","Southwest Brook",47.75,-54.75,6.55067163,5.9,4.1,"Threatened",23
+"24","Southwest Brook Milltown",47.75,-54.75,6.55067163,6.2,4.4,"Threatened",24
+"25","Cinq Cerf Brook",47.75,-57.75,6.36364079,5.6,3.8,"Threatened",25
+"26","Dolland Brook",47.75,-52.75,7.00556429,6.4,4.8,"Threatened",26
+"27","Garndy’s Bay of Islands",47.75,-57.75,6.36364079,5.6,3.8,"Threatened",27
+"28","Grandys Brook",47.75,-57.75,6.36364079,5.6,3.8,"Threatened",28
+"29","Grey River",47.75,-52.75,7.00556429,6.3,4.7,"Threatened",29
+"30","Isle aux Morte",47.75,-58.75,6.48498414,5.6,3.8,"Threatened",30
+"31","La Poile River",47.75,-52.75,7.00556429,6.3,4.7,"Threatened",31
+"32","White Bear River",47.75,-52.75,7.00556429,6.3,4.7,"Threatened",32
+"33","Pipers Hole",47.75,-52.75,7.00556429,6,4.4,"Least Concern",33
+"34","Badger Brook",48.75,-55.75,4.96667274,5.9,3.9,"Least Concern",34
+"35","Junction Brook",48.75,-55.75,4.96667274,5.9,3.9,"Least Concern",35
+"36","Little Junction",48.75,-55.75,4.96667274,5.9,3.9,"Least Concern",36
+"37","Exploits Rocky Brook",49.75,-54.75,5.09768683,6.5,4.5,"Least Concern",37
+"38","Dead Water Brook",49.75,-56.75,4.05797564,5.5,3.4,"Least Concern",38
+"39","Lomond",49.75,-56.75,4.05797564,5.2,3.1,"Least Concern",39
+"40","Taylors Brook",49.75,-56.75,4.05797564,4.9,2.8,"Least Concern",40
+"41","Campbellton",49.75,-53.75,5.63730606,6.1,4.2,"Least Concern",41
+"42","Soulis Brook",48.75,-53.75,6.1326389,6.2,4.4,"Least Concern",42
+"43","Indian Arm Brook",49.75,-53.75,5.63730606,6.1,4.2,"Least Concern",43
+"44","Indian Bay Brook",49.75,-52.75,6.00000408,6,4.2,"Least Concern",44
+"45","Salmon River (Gander)",48.75,-53.75,6.1326389,6.4,4.5,"Least Concern",45
+"46","Terra Nova",48.75,-53.75,6.1326389,6.4,4.7,"Least Concern",46
+"47","Bay du Nord River",47.75,-54.75,6.55067163,6.3,4.5,"Threatened",47
+"48","Long Harbour River",47.75,-53.75,6.75593241,6.1,4.4,"Threatened",48
+"49","Southwest Brook",53.75,-56.75,2.32736609,1.6,-0.6,"Least Concern",49
+"50","Great Rattling Brook",48.75,-54.75,5.62479911,6.5,4.6,"Least Concern",50
+"51","Alexis",52.75,-55.75,3.3082482,1.8,-0.2,"Least Concern",51
+"52","Big",54.75,-57.75,1.89351875,1.4,-0.9,"Least Concern",52
+"53","English",54.75,-58.75,0.91387572,1,-1.5,"Least Concern",53
+"54","Hunt",55.75,-59.75,0.37048749,0.1,-2.4,"Least Concern",54
+"55","Kennamu",53.75,-58.75,-0.08528149,2.3,-0.2,"Least Concern",55
+"56","Pinware",51.75,-55.75,3.74642781,2.5,0.4,"Least Concern",56
+"57","Red wine",53.75,-60.75,-1.04139642,0.7,-1.8,"Least Concern",57
+"58","Sand Hill",53.75,-55.75,3.33454311,1.7,-0.2,"Least Concern",58
+"59","St. Mary's",52.75,-54.75,4.16897899,2.3,0.3,"Least Concern",59
+"60","Big East",50.75,-56.75,3.63618148,4.6,2.5,"Least Concern",60
+"61","Beaver Brook",50.75,-55.75,4.20575847,3.7,1.7,"Least Concern",61
+"62","Roses Feeder",51.75,-55.75,3.74642781,3.4,1.4,"Least Concern",62
+"63","River Of Ponds",50.75,-56.75,3.63618148,4.7,2.5,"Least Concern",63
+"64","St. Genevieve",51.75,-55.75,3.74642781,3.6,1.5,"Least Concern",64
+"65","Western Arm",51.75,-55.75,3.74642781,3.7,1.6,"Least Concern",65
+"66","Main River (Sops Arm)",49.75,-55.75,4.42346378,4.9,2.8,"Least Concern",66
+"67","Grey River",47.75,-56.75,6.26199727,5.3,3.5,"Threatened",67
+"68","Black Duck Brook",48.75,-57.75,5.00046359,5.9,4,"Least Concern",68
+"69","Grand Codroy River",47.75,-58.75,6.48498414,5.1,3.2,"Least Concern",69
+"70","Flat Bay Brook",48.75,-57.75,5.00046359,6.4,4.5,"Least Concern",70
+"71","Middle Barachois",48.75,-57.75,5.00046359,6.1,4.3,"Least Concern",71
+"72","Pinchgut Brook",48.75,-57.75,5.00046359,5.4,3.5,"Least Concern",72
+"73","White Bear River",47.75,-56.75,6.26199727,5.5,3.7,"Threatened",73

@@ -74,6 +74,26 @@ Now I can compare the two maps to see where the populations we have lie on the C
 Using this resource, plus supplementary resources for the ones that aren't clear on the map, we will make another column in the dataset for threatened/non-threatened.
 
 ```{r}
+data <- read.csv("ClimTrendDataNFL2.csv", header=T)
+head(data)
 
+data$mapcode <- NFLclim$mapcode
+data$Status <- NA
+
+# all the populations from Bradbury et al. 2015 are from southern NFL and have threatened status (map code 1:32)
+# populations 47, 48, 67, and 73 also have threatened status
+
+for (i in 1:nrow(data)) {
+	if (data$mapcode[i] <= 32 | data$mapcode[i] %in% c(47,48,67,73)) {
+		data$Status[i] <- "Threatened"
+	} else {
+		data$Status[i] <- "Least Concern"
+	}
+}
+
+View(data)
+data <- subset(data, select = -c(X.1, X)) # have some random columns that are unnecessary, so I'm deleting them
+
+write.csv(data, "EndangermentStatusNFL.csv")
 ```
 
