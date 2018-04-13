@@ -3,15 +3,16 @@ LocaData <- read.csv("mec12972-sup-0001-TableS1-S5.csv", header=T, sep=",",strin
 
 # create the range for Google maps to make a basemap for our salmon sites
 PopRange <- c(min(LocaData$Longitude) ,
-              min(LocaData$Latitude ) +9 ,
+              min(LocaData$Latitude ) ,
               max(LocaData$Longitude) ,
-              max(LocaData$Latitude) -6)
+              max(LocaData$Latitude) )
 # create the basemap and store it in r as a object using google's satellite
-biomap <- ggmap(get_map(location=PopRange, source = "google", maptype = "hybrid", zoom = 5))
+biomap <- ggmap(get_map(location=PopRange, source = "google", maptype = "satellite", zoom = 5))
 # populate our map with our sampling sites
 biomap+
   geom_point(aes(x = Longitude, y= Latitude) , data= LocaData, color = "yellow", size = 2, alpha= 1)
 
+<<<<<<< HEAD
 # lets map the samples that Kurtis has now created lat long for.
   
 NFLDpops<- read.csv("NFLD rivers lat longCSV.csv")
@@ -64,3 +65,9 @@ print(p1,vp=v1)
 print(map2 + xlab("")+ ylab("")  ,vp=v2)
 
 
+=======
+# try and add labells??
+  geom_text(aes(x = Longitude, y= Latitude), label=LocaData$Name, data= LocaData)
+ 
+            
+>>>>>>> e1393a2aac1916824a4cf79f658317b6abde287f
