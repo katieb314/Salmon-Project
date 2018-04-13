@@ -44,7 +44,8 @@ projection(rast)=CRS("+init=epsg:4326") #want to make sure I'm using the right c
 quartz()
 plot.new()
 plot(rast$bio1, xlim=c(-80,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F) #plotting the newfoundland populations to get an idea of where they are  
-points(cbind(NFLclim$Longitude, NFLclim$Latitude), col="#003F91FF", cex=1.5, pch=16) #adding the points
+points(cbind(NFLclim$Longitude, NFLclim$Latitude), col="#003F91FF", cex=1, pch=16) #adding the points
+
 ```
 
 Now I'm going to make the dataframe including lat, long, and temperature values for current, past, and future temperatures:
