@@ -15,3 +15,4 @@ status8<-data.frame(SARA = rep(c("No status")), COSEWIC= rep(c("Threatened"))) #
 
 df<-rbind(status, status1, status2, status3, status4, status5, status6, status7, status8) #bind the data frames so it is one dataframe on 73 obs.
 CONstat<-cbind(NFLD, df) #bind conservation status data frame with NFLD
+CONstat<-CONstat[-c(4:18)] #drop unnecessary columns to have complete dataframe
