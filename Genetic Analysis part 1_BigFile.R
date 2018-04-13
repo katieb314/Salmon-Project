@@ -17,6 +17,9 @@ library(diveRsity)
 #another package needed
 devtools::install_github('wrengels/HWxtest', subdir='pkg')
 
+#***UPDATE!***After looking harder at the package, I have realized that there may be a better function to do so- divBasic
+divBasic(infile = "/Users/lilacolston-nepali/Salmon-Project/Ssalar_usat_genepop_23Sep2014.txt?sequence=1.1", outfile = "HWEBigFile", gp = 3)
+
 #this will calculate basic statistics on my data, including HWE
 basicStats(infile = "/Users/lilacolston-nepali/Salmon-Project/Ssalar_usat_genepop_23Sep2014.txt?sequence=1.1", outfile ="/Users/lilacolston-nepali/Salmon-Project/StrucBig")
 
