@@ -1,0 +1,100 @@
+---
+title: "NFLmap for Endangered"
+author: "Katie Birchard"
+date: '2018-04-13'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We want to know which populations are threatened and which ones aren't for our analyses. There are no specified coordinates online for this, but there is a map of COSEWIC endangerment status online @ http://www.asf.ca/endangered-populations.html. I'm going to make a map to compare our population locations to the locations of threatened species in Newfoundland.
+
+```{r}
+NFLclim <- read.csv("ClimTrendDataNFL3.csv", header=T)
+View(NFLclim)
+# NFLclim <- NFLclim[,apply(NFLclim, 2, function(x) { sum(!is.na(x)) > 0 })] # function to remove columns that just contain NA
+
+#making a map of the points that is not a raster map
+range(NFLclim$Latitude)
+range(NFLclim$Longitude)
+
+minlat <- min(NFLclim$Latitude) 
+maxlat <- max(NFLclim$Latitude)  
+minlong <- min(NFLclim$Longitude) - 2
+minlong
+maxlong <- max(NFLclim$Longitude) + 2
+maxlong
+View(NFLclim)
+
+is.numeric(minlat)
+
+library(maps)
+library(ggplot2)
+world_map <- map_data("world")
+#tried to subset the world map all in one go, but it didn't like this, so had to do 2 steps
+subsetMap <- subset(world_map, #world_map$long > minlong & 
+											world_map$long > maxlong &
+											world_map$lat > minlat) #&
+											#world_map&lat < maxlong) 
+
+subsetMap2 <- subset(subsetMap, world_map$long < minlong & world_map$lat < maxlat)
+subsetMap2
+
+baseplot <- ggplot() + coord_fixed() +
+  xlab("") + ylab("")
+
+baseworld_rough <- baseplot + #making a base world plot, and specifying my coordinates
+	geom_polygon(data=world_map, aes(x=long, y=lat, group=group),
+																					colour="green", fill="light green") +
+	coord_quickmap(xlim = c(minlong,maxlong), ylim=c(minlat,maxlat))
+
+baseworld_rough
+
+cleanup <- theme(panel.grid.major = element_blank(), #making it pretty
+				panel.grid.minor = element_blank(), 
+        panel.background = element_rect(fill = 'lightblue1', colour = 'lightblue1'), 
+        axis.line = element_line(colour = "white"), legend.position="none",
+        axis.ticks=element_blank(), axis.text.x=element_blank(),
+        axis.text.y=element_blank())
+
+base_world <- baseworld_rough + cleanup #adding the prettiness to my rough map
+base_world
+
+NFLclim$mapcode <- c(1:nrow(NFLclim)) #coding the populations so it isn't a huge mess when I add the labels to the map
+
+library(ggrepel) #need this package to add labels
+NFLmap_coloured <- base_world + #adding the populations to my map
+  geom_point(data=NFLclim,aes(x=Longitude, y=Latitude, colour=River), size=2, alpha=I(0.7)) +
+	geom_text_repel(data = NFLclim, aes(Longitude, Latitude, label = mapcode), size = 3,
+                  box.padding = unit(0.1, 'lines'), force = 0.5)
+
+NFLmap_coloured
+dev.copy2pdf(file="NFLmap_coloured.pdf", width = 7, height = 5) #saving the map to a pdf
+```
+
+Now I can compare the two maps to see where the populations we have lie on the COSEWIC endangerment map.
+Using this resource, plus supplementary resources for the ones that aren't clear on the map, we will make another column in the dataset for threatened/non-threatened.
+
+```{r}
+NFLclim$Status <- NA
+View(NFLclim)
+NFLclim$Code <- c("NL-ALX", "NL-BBR", "BDN", "NL-BVB", "NL-BIG", "BBA", "NL-BER", "BSB", "NL-BDB", "NL-CMP", "CCR", "CNR", "CMB", "NL-DWB", "DHB", "NL-ENG", "NL-RBR", "NL-FLB", "GBI", "GAR", "GBB", "NL-COD", "GNR", "NL-GRB", "GRR", "NL-HUR", "NL-IAB", "NL-IBB", "IAM", "NL-JUB", "NL-KEN", "LPR", "NL-LJB", "LRD", "LSR", "NL-LOM", "LHR", "NL-MNR", "NL-MBA", "NHR", "NEB", "NPR", "NWT", "OBB", "NL-PGB", "NL-PIN", "NL-PHR", "NL-RWR", "NL-ROP", "RKR", "NL-ROF", "NL-SRN", "SLR", "NL-SAN", "FBS", "NL-GSB", "SPR", "SWB", "SBM", "NL-SGR", "NL-SMR", "STS", "STN", "NL-TYB", "NL-TNR", "NL-WAB", "WBR")
+View(NFLclim)
+NFLendangered <- NFLclim[-grep("(\\w)(\\w)-", NFLclim$Code), ] #using regex to get the endangered populations only - these populations have a 3 letter code because they are all from one dataset (Bradbury et al. 2015)
+View(NFLendangered)
+
+#can make ifelse statement using regex to assign endangerment status:
+for (i in 1:nrow(NFLclim)) {
+	if (length(grep("(\\w)(\\w)-", NFLclim$Code[i])) == T) {
+		NFLclim$Status[i] <- "Least Concern"
+	} else {
+		NFLclim$Status[i] <- "Threatened"
+	}
+}
+
+#yay it worked!
+
+write.csv(data, "EndangermentStatusNFL2.csv")
+```
