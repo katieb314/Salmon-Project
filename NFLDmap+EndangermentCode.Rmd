@@ -96,5 +96,5 @@ for (i in 1:nrow(NFLclim)) {
 
 #yay it worked!
 
-write.csv(data, "EndangermentStatusNFL2.csv")
+write.csv(NFLclim, "EndangermentStatusNFL2.csv")
 ```
