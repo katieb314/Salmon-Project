@@ -1,0 +1,108 @@
+---
+title: "ClimDataNFL2"
+author: "Katie Birchard"
+date: '2018-04-15'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+# Load dataset with the correct lats and longs
+NFLclim2 <- read.csv("ClimTrendDataNFL3.csv")
+View(NFLclim2)
+
+# need to load raster to get access to worldclim data
+library(raster)
+
+rast <- getData("worldclim", var="bio", res=10) #making raster object, using biological variables, lowest resolution
+rast <- rast[[c(1)]] #taking out only the mean annual temperature variable (taken b/w 1950-2000)
+
+coords <- data.frame(x=NFLclim2$Longitude, y=NFLclim2$Latitude) #making dataframe for my lats and longs
+
+points <- SpatialPoints(coords, proj4string = rast@crs) #determining the datapoints by specifying my lat and long
+
+values <- extract(rast, points) #extracting the mean annual temperature for those lats and longs
+
+df <- cbind.data.frame(coordinates(points), values) #putting lat, long, and mean annual temp into a dataframe
+
+head(df) #this dataframe includes temperatures for all specific lats and longs for all populations
+
+df$values <- values/10 #temp is in degrees C*10, so dividing by 10 to get actual degrees C
+head(df)
+
+projection(rast)=CRS("+init=epsg:4326") #want to make sure I'm using the right coordinate system
+
+quartz()
+plot.new()
+plot(rast$bio1, xlim=c(-80,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F) #plotting the newfoundland populations to get an idea of where they are  
+points(cbind(NFLclim$Longitude, NFLclim$Latitude), col="#003F91FF", cex=1, pch=16) #adding the points
+
+```
+
+Now I'm going to change temperature values to the correct ones for latitude/longitude for current, past, and future temperatures:
+
+```{r}
+#df is the dataframe containing current temperature values
+CurTemp <- df$values
+
+#Now to get future temperature data, the same as for the big file:
+rast2 <- getData("CMIP5", var="bio", res=10, rcp=85, model="GS", year=50) #used rcp=85 based on Sanford et al. 2014, used model=GISS based on Miao et al. 2014
+rast2 <- rast2[[c(1)]]
+names(rast2) <- "futTemp"
+values2 <- extract(rast2, points)
+View(values2)
+
+FutTemp <- values2/10# temperature is in degrees Celsius *10, so need to divide by 10
+head(FutTemp)
+
+#Now to get past climate data:
+pastClim <- read.table("pastData.txt", header=T) #Using GISS model to get past climate data from pre-industrial period (1770)
+#whoops I accidentally deleted pastData.txt from the github - restored this using terminal
+head(pastClim)
+
+NFLclim2$pastTemp <- NA #making a new column in the dataset for the past data
+NFLclim2_rounded <- NFLclim2
+NFLclim2_rounded$Latitude_rounded <- round(NFLclim2_rounded$Latitude)-0.25  
+NFLclim2_rounded$Longitude_rounded <- round(NFLclim2_rounded$Longitude) + 0.25 #have to round to the .75 so I can match it with the PastClim data
+View(NFLclim2_rounded) #now ready to put into loop
+
+#loop will take forever to run because PastClim has >250,000 rows, so I will cut out unnecessary rows (rows outside range)
+range(pastClim$lat)
+range(NFLclim2_rounded$Latitude_rounded) # only need pastClim$lat between 46.75 and 55.75
+
+pastClim2 <- pastClim[which(pastClim$lat >= 46.75 & pastClim$lat <= 55.75), ]
+nrow(pastClim2) # much better
+
+range(pastClim2$long)
+range(NFLclim2_rounded$Longitude_rounded) #only need pastClim$long between -60.75 and -52.75
+
+pastClim3 <- pastClim2[which(pastClim2$long >= -60.75 & pastClim2$long <= -52.75), ]
+nrow(pastClim3) #323 rows, so should not take as long to cycle through the loop
+
+for (i in 1:nrow(pastClim3)) { #making a loop to populate the pastTemp column with the correct temperatures
+	for(j in 1:nrow(NFLclim2_rounded)) {
+		if (NFLclim2_rounded[j,]$Latitude_rounded == pastClim3[i,]$lat & NFLclim2_rounded[j,]$Longitude_rounded == pastClim3[i,]$long) {
+			NFLclim2_rounded[j, ]$pastTemp <- pastClim3[i,]$bio.1	
+	}
+	
+	}
+}
+
+# Now add all the climate data together!
+
+NFLclim2_rounded$FutTemp <- FutTemp
+NFLclim2_rounded$CurTemp <- CurTemp
+
+#now turning it into a csv
+
+write.csv(NFLclim2_rounded, file="ClimTrendDataNFL4.csv")
+```
+
+
+```
+
