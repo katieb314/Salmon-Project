@@ -8,7 +8,6 @@ PW<-sapply(PW, as.numeric)
 sapply(PW, class) #verify that they are now numeric, woohoo they are
 sum(PW, na.rm=TRUE) # sum all values, removing NA's 4.7719
 mean(PW, na.rm=TRUE) # mean of all values, excluding NA's, 0.1325528
-
-
+range(PW, na.rm = TRUE) ## [1] 0.0274 0.2941
 
 
