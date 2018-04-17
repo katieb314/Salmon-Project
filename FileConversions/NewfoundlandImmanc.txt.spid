@@ -1,0 +1,19 @@
+# spid-file generated: Sun Apr 08 13:39:41 EDT 2018
+
+# GENEPOP Parser questions
+PARSER_FORMAT=GENEPOP
+
+# Enter the size of the repeated motif (same for all loci: one number; different: comma separated list (e.g.: 2,2,3,2):
+GENEPOP_PARSER_REPEAT_SIZE_QUESTION=
+# Select the type of the data:
+GENEPOP_PARSER_DATA_TYPE_QUESTION=MICROSAT
+# How are Microsat alleles coded?
+GENEPOP_PARSER_MICROSAT_CODING_QUESTION=REPEATS
+
+# Immanc (BayesAss) Writer questions
+WRITER_FORMAT=IMMANC
+
+# Specify the locus/locus combination you want to write to the Immanc (BayesAss) file:
+IMMANC_WRITER_LOCUS_COMBINATION_QUESTION=
+# Specify which data type should be included in the Immanc (BayesAss)) file  (Immanc (BayesAss) can only analyze one data type per file):
+IMMANC_WRITER_DATA_TYPE_QUESTION=MICROSAT
