@@ -558,13 +558,14 @@ nrow(threatened)
 leastcon <- alldat[which (alldat$Status == "Least Concern"), ]
 nrow(leastcon)
 
-rastNFL <- plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="Newfoundland Populations", xaxt="n", yaxt="n", legend=F, asp=1) #plotting the newfoundland populations to get an idea of where they are 
+dev.new(width=5, height=4)
+rastNFL <- plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F, box=F, axes=F) #plotting the newfoundland populations to get an idea of where they are 
 rastNFL
-
+title("Newfoundland Populations", adj=0.75)
 points(cbind(threatened$Longitude, threatened$Latitude), col="black", cex=1, pch=4) #adding the points
 points(cbind(leastcon$Longitude, leastcon$Latitude), col="black", cex=1, pch=16)
 legend("topright", legend=c("Threatened", "Least Concern"), pch=c(4, 16), col=c("black", "black"))
-dev.copy2pdf(file="NFLrastermap_status.pdf", width = 7, height = 5)
+dev.copy2pdf(file="NFLrastermap_status.pdf")
 
 plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F) #plotting the newfoundland populations to get an idea of where they are  
 points(cbind(alldat$Longitude, alldat$Latitude), col=alldat$HWE.values2 == 0, cex=1, pch=20)
