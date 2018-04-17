@@ -1,0 +1,15 @@
+#Much to our disappointment, we could not get BayesAss to work (for measuring migration)
+#Discussion with colleagues suggested this program has lots of issues
+#I ran the following code with adjusted paramaters for f, a and m as suggested in the documentation by Wilson and Rannala 2003, however, all runs resulted in files with just 0's
+#After spending many hours battling BayesAss we decided that we would nto be able to include this analysis in our project
+
+#!/bin/bash
+#SBATCH -c 4
+#SBATCH --mem=8000
+#SBATCH -t 14-0:0:0
+#SBATCH --error=errorfile
+#SBATCH --output=outputbayes
+
+module load bayesass
+BA3 -s=5000 -v -i=100000000 -b=1000000 -n=1000 -t  -f 0.30 -a 0.20 -m 0.40 -o my3out.txt /global/home/hpc3579/Salmon-Project/NewfoundlandImmanc.txt
+
