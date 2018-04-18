@@ -1,0 +1,97 @@
+---
+title: "PophelperBigFile"
+author: "Lila Colston-Nepali"
+date: '2018-04-15'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Pophelper allows you to summarize your STRUCTURE results- find the best K value, and plot the data
+
+For mac users: you will need to install https://www.xquartz.org/ in order to use the package Cairo
+
+```{r}
+# install dependencies and devtools
+install.packages(c("Cairo","ggplot2","gridExtra","gtable","tidyr","devtools"),dependencies=T)
+
+library(c(devtools, ggplot2, gridExtra, gtable, tidyr, devtools, Cairo))
+
+# install pophelper package from GitHub
+devtools::install_github('royfrancis/pophelper')
+
+# load library for use
+library(pophelper)
+
+
+```
+
+The readQ function makes a 'qlist'- a list of the Q-matrices, or the probabilities of 
+individuals to be assigned to a genetic cluster
+
+This qlist can then be used in further steps that will allow us to calculate the 'best K'-
+  the number of genetic clusters that best fits the data set
+  
+```{r}
+
+#Make an object that contains the relevant STRUCTURE output files
+BigFileStrOut <- readQStructure("BIGFILEoutput/")
+
+
+#The next steps prepare the data to analyze best K
+tabulates <- tabulateQ(qlist = BigFileStrOut)
+summarized <- summariseQ(data = tabulates)
+
+# The Evanno method is a commonly accepted method to determine best K, this function calculates it
+evannoMethodStructure(summarized)
+
+
+```
+
+The best K value was 13- as the Delta K value for K =13 was the highest.
+
+Now that we know the best K value, we can plot this output!
+The plotQ() function is the basic function for plotting
+This function is super cool though- as with ggplot2, there are so many ways to customize
+your plots!!
+
+```{r}
+#plotting
+
+BESTK <- readQStructure("STRUCOUT/bigfilestroutput13_f")
+
+labelsBF <- read.delim("BigFileLabels.txt",header=FALSE,stringsAsFactors=FALSE)
+
+plotQ(BESTK, showsp=F, clustercol = c("aquamarine4", "darkslategrey", "darkcyan", "cyan3", "medium aquamarine", "lightseagreen", "paleturquoise4", "medium turquoise", "medium seagreen", "seagreen4", "springgreen4", "turquoise4", "palegreen4"),
+      showlegend = T, legendkeysize = 6, showyaxis = T, 
+      grplab = labelsBF, grplabsize = 1, linesize = 0.3, pointsize = 1, showdiv = FALSE,
+      grplabspacer = -0.2, grplabheight = 1, linetype = 1, font = "Arial", ordergrp = T)
+
+
+```
+
+Plotting details:
+There are SO many ways to customize your plot. Here is the details of some of my customizations.
+clustercol defines the colours
+
+We want the colours to be consistent amongst our plots so we coordinated this.
+
+You can have divider lines between groups, but I find it looks best without.
+The labels (see below) can illustrate this fine.
+
+ordergrp is REALLY useful! It allows you to sort your individuals the way you want- I set it based on our labels.
+
+showsp lets you decide whether you want the strip panel on the side (that says K = N). 
+Aesthetically, I thought it looked best without it, so I set it to FALSE.
+
+showlegend displays the legend showing the two clusters.You can change the size of the legend.
+
+showyaxis shows the scale from 0 to 1 of posterior probability membership to each cluster.
+I chose to include it.
+
+grplab allows you to label the plot by group (in our case region), for better visualization.
+You can customize these labels with size, space and height. I played around with the parameters
+until I found ones that I thought looked good.
+You can also change the size of the label lines etc.
