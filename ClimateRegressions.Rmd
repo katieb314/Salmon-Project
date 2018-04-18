@@ -1,0 +1,346 @@
+---
+title: "ClimateRegressions"
+author: "Katie Birchard"
+date: '2018-04-10'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Now that we have the trends in climatic data, we can perform linear regressions on these trends with indicators of genetic variation in the salmon populations. First, I need to put everything together in one dataset:
+
+```{r}
+bigclim <- read.csv("ClimTrendData.csv") #downloading the climate dataset I made
+View(bigclim)
+bigclim2 <- data.frame(bigclim$code, bigclim$pastTemp, bigclim$CurTemp, bigclim$FutTemp) #taking only the columns I need
+bigclim3 <- bigclim2[order(bigclim2$bigclim.code), ] #reordering it by alphabetizing the populations codes (this is so that the data easily aligns to the HWE dataset)
+
+HWEvalues <- read.csv("HWEdat.csv") #downloading the HWE dataset that contains values for allelic richness, expected heterozygosity, and HWE p-values
+View(HWEvalues)
+HWEvalues2 <- HWEvalues[order(HWEvalues$Populations), ] #reordering the populations by alphabetizing them so they line up with the climate dataset
+
+HWEvalues2$pastTemp <- bigclim3$bigclim.pastTemp #adding past temp data
+HWEvalues2$CurTemp <- bigclim3$bigclim.CurTemp #adding current temp data
+HWEvalues2$FutTemp <- bigclim3$bigclim.FutTemp #adding future temp data
+
+alldat <- HWEvalues2 #renaming the dataset to something more appropriate
+
+
+#need climate trends as well (i.e. slopes of climate data over time)
+trenddat <- data.frame(1:nrow(alldat), alldat$pastTemp, alldat$CurTemp, alldat$FutTemp)
+
+
+#making a function for slope
+slope  <-  function(x){
+    if(all(is.na(x)))
+        return(NA) #returns NA if missing data
+    else
+        return(coef(lm(I(1:3)~x))[2]) #uses a linear model to find the slope of 3 consecutive values (Past temp, Cur temp, and fut temp)
+}
+
+# now apply the function to all rows in trenddat and insert the slope into a new column called "trends"
+trenddat$trends <- apply(trenddat[ ,c("alldat.pastTemp", "alldat.CurTemp", "alldat.FutTemp")], 1, slope)
+
+alldat$ClimTrend <- trenddat$trends #adding the trend column to the big dataset
+
+head(alldat) #yay, it worked!
+View(alldat)
+```
+
+Now, we will see if there is a correlation between climate trends and allelic richness.
+
+* We want the climate trends to be our predictor variable and allelic richness to be our outcome variable
+
+* Basically trying to see if allelic richness can be "predicted" by changes in mean annual temperature
+
+```{r}
+# first, we will do a quick visualization with a scatterplot to see if there are any apparent trends:
+scatter.smooth(x=alldat$ClimTrend, y=alldat$Allelic.Richness, main="Allelic Richness vs. Temp Trends")
+# doesn't look like there is anything going on...
+
+# Now I will quickly check for outliers in the data using a boxplot:
+boxplot(alldat$ClimTrend, main="Temp Trends", sub=paste("Outlier rows: ", boxplot.stats(alldat$ClimTrend)$out))
+#ClimTrend doesn't seem to have any outliers
+boxplot(alldat$Allelic.Richness, main="Allelic Richness", sub=paste("Outlier rows: ", boxplot.stats(alldat$Allelic.Richness)$out))
+#Allelic Richness has a few outliers...
+
+boxplot.stats(alldat$Allelic.Richness)$out #6.41, 5.50, 4.85, 4.93, 6.22, 6.44 are all listed as outliers
+
+#Now let's check for normality by doing a density plot
+install.packages("e1071") #packages that measures skewedness in density plots
+library(e1071)
+plot(density(alldat$ClimTrend), main= "Density Plot: Temp Trends", ylab="Frequency", 
+		 sub=paste("Skewness:", round(e1071::skewness(alldat$ClimTrend), 2)))
+# the plot for temp trends looks slightly bimodal...
+# skewedness = -0.29
+
+plot(density(alldat$Allelic.Richness), main= "Density Plot: Temp Trends", ylab="Frequency", 
+		 sub=paste("Skewness:", round(e1071::skewness(alldat$Allelic.Richness), 2)))
+# wow, this is skewed by those outliers
+# Skewedness = -1.7
+
+#get a look at the histogram
+hist(alldat$Allelic.Richness)
+
+# Now lets look at the level of correlation between Allelic Richness and Temp Trends
+## first with the outliers
+cor(alldat$ClimTrend, alldat$Allelic.Richness) # R = -0.008830456
+
+## now without the outliers
+ARoutliers <- boxplot.stats(alldat$Allelic.Richness)$out
+min(ARoutliers)
+max(ARoutliers)
+
+ARdrop <- alldat[!(alldat$Allelic.Richness <= max(ARoutliers)),]
+cor(ARdrop$ClimTrend, ARdrop$Allelic.Richness) # R= -0.09794524
+# there's a bit more of a negative correlation, but still not much
+
+#how does this hist look:
+hist(ARdrop$Allelic.Richness)
+shapiro.test(ARdrop$Allelic.Richness) #data do not fit normality test (p=0.0003), skewed but can still do a least squares regression
+shapiro.test(log10(ARdrop$Allelic.Richness)) #data not normal (p=2.89e=05)
+shapiro.test(1/(ARdrop$Allelic.Richness)) #not normal (p=2.1e-06)
+
+
+# lets see what the scatterplot looks like for this:
+scatter.smooth(x=ARdrop$ClimTrend, y=ARdrop$Allelic.Richness, main="Allelic Richness vs. Temp Trends")
+# yeahhhhhh, still not really looking like a correlation
+
+# Now I'm making a linear model to get a better quanititative idea
+lmAR <- lm(Allelic.Richness ~ ClimTrend, data=alldat)
+print(lmAR) # gives intercept and slope
+summary(lmAR) # gives summary statistics, p=0.914 (not significant), R^2=7.798e=05
+resAR <- residuals(lmAR) #finding residuals
+plot(alldat$ClimTrend, resAR) #plotting residuals(difference b/w observed value and predicted value)
+
+#what about a linear model for the dataset with the outliers removed:
+lmARdrop <- lm(Allelic.Richness ~ ClimTrend, data=ARdrop)
+summary(lmARdrop) #p=0.2379, R^2=0.009593
+
+#I want to make a ggplot figure to show the linear regression (or lack of)
+library(ggplot2)
+
+#customizing a ggplot theme
+
+theme_katie<-function(base_size = 18, base_family = "Arial"){
+  theme_bw(base_size = base_size, base_family = base_family) %+replace% 
+    theme(axis.text = element_text(size = rel(0.8),colour="black"),
+          axis.ticks = element_line(colour = "black"),
+    			legend.key = element_rect(fill="transparent", colour=NA),
+    			panel.background = element_blank(),
+    			legend.background = element_rect(fill="transparent", colour=NA),
+          legend.position = "none",
+          panel.border = element_rect(fill = NA, colour = NA), 
+          panel.grid.major = element_line(colour = NA,size = 0), 
+          panel.grid.minor = element_line(colour = NA,size = 0), 
+          axis.line = element_line(colour ="black")
+    )
+}
+
+ARbigLM <- ggplot(ARdrop, aes(y=Allelic.Richness, x=ClimTrend)) +
+	geom_point(colour="cyan3", size=5, alpha=0.6) +
+	geom_smooth(method=lm, colour="cyan4") +
+	theme_katie() +
+	ylab("Allelic Richness") +
+	xlab("Trend in Annual Temperature over Time")
+print(ARbigLM)
+
+
+#what if we log transform it?
+lmARlog <- lm(log10(Allelic.Richness) ~ log10(ClimTrend), data=alldat)
+print(lmARlog)
+summary(lmARlog) #p=0.0853
+
+#boostrap simulation b/w populations with neg climate trend vs. pos clim trend?
+## trying to find out if mean allelic richness is significantly different between pos and neg climate trends
+
+# make new column in alldat for categorical variable - clim pos/neg
+alldat$ClimSlope <- NA
+head(alldat)
+
+#Making a loop to assign either a 0 or a 1 to the populations for my new column
+for (i in 1:nrow(alldat)) {
+	if (alldat$ClimTrend[i] > 0) {
+		alldat$ClimSlope[i] <- "Pos"
+	} 
+	if (alldat$ClimTrend[i] < 0) {
+		alldat$ClimSlope[i] <- "Neg"
+	} 
+}
+
+Iters <- 1000 #we want to take a random sample 1000 times
+BootOut <- rep(NA, Iters) #making a column with 1000 levels for the output of my bootstrap analysis
+ClimPos <- alldat$Allelic.Richness[grep("Pos", alldat$ClimSlope)] #taking all the allelic richness values that have positive climate slope values
+ClimNeg <- alldat$Allelic.Richness[grep("Neg", alldat$ClimSlope)] #taking all the allelic richness values that have a negative slope
+for (i in 1:Iters){
+	BootOut[i] <-
+		mean(sample(ClimPos, length(ClimPos), replace=T)) - #taking mean of a sample of the allelic richness values for positive slopes
+		mean(sample(ClimNeg, length(ClimNeg), replace=T)) #subtracting the mean of a sample of allelic richness values for negative slopes
+}
+head(BootOut) 
+
+
+qplot(BootOut) # look at the distribution of values
+
+XBootOut <- mean(BootOut) #mean of distribution is -0.1725703
+CIlow <- sort(BootOut)[floor(length(BootOut)*0.025)]
+CIhigh <- sort(BootOut)[ceiling(length(BootOut)*0.975)]
+CIboot <- round(c(CIlow, CIhigh),2)
+
+#To find p-value, need the mean difference of the raw data:
+RawDat <- aggregate(alldat$Allelic.Richness, list(alldat$ClimSlope), mean)
+RawDat
+
+RawDiff <- RawDat$x[2] - RawDat$x[1]
+qplot(BootOut) + theme_bw() + geom_vline(aes(xintercept=RawDiff), colour="blue")
+
+p <- sum(BootOut>RawDiff)/length(BootOut)
+paste("The estimated p-value is:", p) #p=0.512, so not really a big difference here
+
+#do bootstrap simulation b/w populations that are endangered and not endangered
+
+```
+
+Next, we will see if there is a correlation between climate trends and expected heterozygosity:
+
+```{r}
+# first, we will do a quick visualization with a scatterplot to see if there are any apparent trends:
+scatter.smooth(x=alldat$ClimTrend, y=alldat$Expected.Het, main="Expected Heterozygosity vs. Temp Trends")
+# looks like expected heterozygosity is pretty stable with temperature fluctuations...
+
+# Now I will quickly check for outliers in the data using a boxplot:
+boxplot(alldat$Expected.Het, main="Expected Heterozygosity", sub=paste("Outlier rows: ", boxplot.stats(alldat$Expected.Het)$out))
+#There are quite a few outliers for expected heterozygosity...
+
+boxplot.stats(alldat$Expected.Het)$out #0.78 0.79 0.77 0.70 0.77 0.69 0.66 0.78 0.79 0.79 0.79 0.77 are all listed as outliers
+
+#Now let's check for normality by doing a density plot
+plot(density(alldat$Expected.Het), main= "Density Plot: Expected Heterozygosity", ylab="Frequency", 
+		 sub=paste("Skewness:", round(e1071::skewness(alldat$Expected.Het), 2)))
+# this is even more skewed than the allelic richness density plot
+# Skewedness = -2.54
+
+# Now lets look at the level of correlation between Expected Heterozygosity and Temp Trends
+## first with the outliers
+cor(alldat$ClimTrend, alldat$Expected.Het) # R = 0.1223153
+
+## now without the outliers
+HEoutliers <- boxplot.stats(alldat$Expected.Het)$out
+min(HEoutliers)
+max(HEoutliers)
+
+HEdrop <- alldat[!(alldat$Expected.Het <= max(HEoutliers)),]
+cor(HEdrop$ClimTrend, HEdrop$Expected.Het) # R= 0.09128052 --> correlation coefficient actually went down
+
+# lets see what the scatterplot looks like for this:
+scatter.smooth(x=HEdrop$ClimTrend, y=HEdrop$Expected.Het, main="Expected Heterozygosity vs. Temp Trends")
+# no correlation here
+
+# Now I'm making a linear model to get a better quanititative idea
+lmHE <- lm(Expected.Het ~ ClimTrend, data=alldat)
+summary(lmHE) # gives summary statistics, p=0.132, R^2=0.01496
+
+#what if we log transform it?
+lmHElog <- lm(log10(Expected.Het) ~ log10(ClimTrend), data=alldat)
+summary(lmHElog) #p=0.007319, R^2=0.06714-
+
+#linear model without the outliers:
+lmHEdrop <- lm(Expected.Het ~ ClimTrend, data=HEdrop)
+summary(lmHEdrop) #p=0.2817, R^2=0.008332
+
+HEbigLM <- ggplot(HEdrop, aes(x=ClimTrend, y=Expected.Het)) +
+	geom_point(colour="cyan3", size=5, alpha=0.6) +
+	geom_smooth(method=lm, colour="cyan4") +
+	theme_katie() +
+	ylab("Expected Heterozygosity") +
+	xlab("Trend in Annual Temperature over Time")
+print(HEbigLM)
+```
+
+Maybe there is an interaction going on between multiple values. I'm going to run multiple regressions now:
+```{r}
+#We want a dataset free of the outliers from both expected heterozygosity and allelic richness:
+MultDrop <- ARdrop[!(ARdrop$Expected.Het <= max(HEoutliers)),]
+
+#run a least squares regression:
+lmMultDrop <- lm(Expected.Het*Allelic.Richness ~ ClimTrend, data=MultDrop)
+summary(lmMultDrop) #p=0.653
+
+#this analysis actually doesn't make much sense because allelic richness and He are related
+```
+
+
+Then, we will see if there is a correlation between climate trends and deviations from HWE:
+
+```{r}
+# first, we will do a quick visualization with a scatterplot to see if there are any apparent trends:
+scatter.smooth(x=alldat$ClimTrend, y=alldat$HWE.values, main="Deviations from HWE vs. Temp Trends")
+# looks like there is no definitive relationship between temp trends and deviations from HWE...
+
+# Now I will quickly check for outliers in the data using a boxplot:
+boxplot(alldat$HWE.values, main="Deviations from HWE", sub=paste("Outlier rows: ", boxplot.stats(alldat$HWE.values)$out))
+#no outliers...
+
+range(alldat$HWE.values)
+hist(alldat$HWE.values) #looks like there are 2 groups of individuals, one that deviates from HWE, and one that does not - should do logistical regression for this
+
+#Now let's check for normality by doing a density plot
+plot(density(alldat$HWE.values), main= "Density Plot: Deviations from HWE", ylab="Frequency", 
+		 sub=paste("Skewness:", round(e1071::skewness(alldat$HWE.values), 2)))
+# bimodal distribution
+
+# I can make the HWE p values truly dichotomous by assigning p < 0.05 == 0, and p > 0.05 == 1 - then I can run a logistic regression on it to see if there is a correlation with temperature trends
+
+#I'm making a new row to put the binary HWE values in:
+alldat$HWE.values2 <- NA
+head(alldat)
+
+#Making a loop to assign either a 0 or a 1 to the populations for my new column
+for (i in 1:nrow(alldat)) {
+	if (alldat$HWE.values[i] >= 0.05) {
+		alldat$HWE.values2[i] <- 1
+	} else {
+		alldat$HWE.values2[i] <- 0
+	} 
+}
+
+head(alldat) #my new column is populated, so now I can perform a logistic regression
+
+mod1<-glm(HWE.values2~ClimTrend, data=alldat, family=binomial(link="logit"))
+summary(mod1) # p=0.0876, not significant
+# endangered populations tend to be further south, so maybe we should try with latitude
+
+# taking the latitude and longitudes out of the bigclim dataset and putting them into alldat:
+#first I have to reorder bigclim by population so it's in same order as alldat:
+bigclim[order(bigclim$code), ]
+alldat$Latitude <- bigclim$Latitude
+alldat$Longitude <- bigclim$Longitude
+head(alldat)
+
+# Running a logistic regression with HWE deviations and latitude
+mod2<-glm(HWE.values2~Latitude, data=alldat, family=binomial(link="logit"))
+summary(mod2)
+
+#Latitude + longitude
+mod3 <- glm(HWE.values2~Latitude+Longitude, data=alldat, family=binomial(link="logit"))
+summary(mod3)
+
+#just longitude
+mod4 <- glm(HWE.values2~Longitude, data=alldat, family=binomial(link="logit"))
+summary(mod4)
+
+# What about if there is a relationship b/w deviations from HWE and endangerment status?
+StatusDat <- read.csv("EndangermentStatusNFL.csv")
+head(StatusDat)
+
+chisq.test(StatusDat$Status, alldat$HWE.values2)
+
+#use logistic regression
+#plot on map 
+
+head(bigclim)
+
+```
+
