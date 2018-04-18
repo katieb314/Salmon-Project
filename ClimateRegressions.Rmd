@@ -164,10 +164,10 @@ summary(lmARlog) #p=0.0853
 
 ARlogLM <- ggplot(alldat, aes(y=log10(Allelic.Richness), x=log10(ClimTrend))) +
 	geom_point(colour="cyan3", size=5, alpha=0.6) +
-	geom_smooth(method=lm, colour="cyan4") +
+	#geom_smooth(method=lm, colour="cyan4") +
 	theme_katie() +
 	ylab("Log of Allelic Richness") +
-	xlab("Trend in Annual Temperature over Time") +
+	xlab("Log of Trend in Annual Temperature over Time") +
 	stat_fit_glance(method="lm", geom="text", aes(label=paste0("p = ", round(..p.value.., 3))), label.x.npc = 0.8, label.y.npc = 0.2) +
 	stat_poly_eq(formula = log10(alldat$Allelic.Richness) ~ log10(alldat$ClimTrend), 
                 aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
@@ -293,7 +293,7 @@ HElogLM <- ggplot(alldat, aes(y=log10(Expected.Het), x=log10(ClimTrend))) +
 	geom_smooth(method=lm, colour="cyan4") +
 	theme_katie() +
 	ylab("Log of Expected Heterozygosity") +
-	xlab("Trend in Annual Temperature over Time") +
+	xlab("Log of Trend in Annual Temperature over Time") +
 	stat_fit_glance(method="lm", geom="text", aes(label=paste0("p = ", round(..p.value.., 3))), label.x.npc = 0.8, label.y.npc = 0.2) +
 	stat_poly_eq(formula = log10(alldat$Expected.Het) ~ log10(alldat$ClimTrend), 
                 aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
