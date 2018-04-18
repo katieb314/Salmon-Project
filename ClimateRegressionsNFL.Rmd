@@ -76,17 +76,18 @@ View(NFLData2)
 NFLData3 <- NFLData2[order(NFLData2$Code), ]
 View(NFLData3)
 
-HWEvalues <- read.csv("HWEdatNFL.csv") #downloading the HWE dataset that contains values for allelic richness, expected heterozygosity, and HWE p-values
+HWEvalues <- read.csv("HWEdatNFL2.csv") #downloading the HWE dataset that contains values for allelic richness, expected heterozygosity, and HWE p-values
 View(HWEvalues)
 
 #need to take out row 3 and 24, as these populations are not in the other dataset
 HWEvalues2 <- HWEvalues[-c(3, 24), ]
 
-HWEvalues3 <- HWEvalues2[order(HWEvalues2$Populations), ] #reordering the populations by alphabetizing them so they line up with the climate dataset
+HWEvalues3 <- HWEvalues2[order(HWEvalues2$Populations), ] #reordering the populations by alphabetizing them so they line up with the climate dataset --> Kurtis redid file and now the codes don't match up, so I've extracted the codes again
 
 HWEvalues3$pastTemp <- NFLData3$pastTemp #adding past temp data
 HWEvalues3$CurTemp <- NFLData3$CurTemp #adding current temp data
 HWEvalues3$FutTemp <- NFLData3$FutTemp #adding future temp data
+View(HWEvalues3)
 
 alldat <- HWEvalues3 #renaming the dataset to something more appropriate
 View(alldat) #making sure it's in the correct order 
@@ -147,7 +148,7 @@ hist(alldat$Allelic.Richness)
 
 # Now lets look at the level of correlation between Allelic Richness and Temp Trends
 ## first with the outliers
-cor(alldat$ClimTrend, alldat$Allelic.Richness) # R = 0.02723
+cor(alldat$ClimTrend, alldat$Allelic.Richness) # R = 0.0272
 
 ## now without the outliers
 ARoutliers <- boxplot.stats(alldat$Allelic.Richness)$out
@@ -178,7 +179,7 @@ plot(alldat$ClimTrend, resAR) #plotting residuals(difference b/w observed value 
 
 #what about a linear model for the dataset with the outliers removed:
 lmARdrop <- lm(Allelic.Richness ~ ClimTrend, data=ARdrop)
-summary(lmARdrop) #p=0.598, R^2=0.0004439 ... no correlation still
+summary(lmARdrop) #p=0.598, R^2=0.00444 ... no correlation still
 
 #I want to make a ggplot figure to show the linear regression (or lack of)
 library(ggplot2)
@@ -190,7 +191,7 @@ font_import("Arial") # didn't work
 
 install.packages("showtext")
 library(showtext)
-font_add_google("Arial")
+font_add_google("Arial") #this also didn't work, guess I'll just use 
 
 theme_katie<-function(base_size = 18, base_family = ""){
   theme_bw(base_size = base_size, base_family = base_family) %+replace% 
@@ -278,10 +279,10 @@ head(BootOut)
 
 qplot(BootOut) # look at the distribution of values
 
-XBootOut <- mean(BootOut) #mean of distribution is 0.0149
+XBootOut <- mean(BootOut) #mean of distribution is -0.614
 CIlow <- sort(BootOut)[floor(length(BootOut)*0.025)] 
 CIhigh <- sort(BootOut)[ceiling(length(BootOut)*0.975)]
-CIboot <- round(c(CIlow, CIhigh),2) #[-0.55, 0.59]
+CIboot <- round(c(CIlow, CIhigh),2) #[-0.77, 0.60]
 
 #To find p-value, need the mean difference of the raw data:
 RawDat <- aggregate(alldat$Allelic.Richness, list(alldat$ClimSlope), mean)
@@ -291,7 +292,7 @@ RawDiff <- RawDat$x[2] - RawDat$x[1]
 qplot(BootOut) + theme_bw() + geom_vline(aes(xintercept=RawDiff), colour="blue")
 
 p <- sum(BootOut>RawDiff)/length(BootOut)
-paste("The estimated p-value is:", p) #p=0.489, so not really a big difference here
+paste("The estimated p-value is:", p) #p=0.503, so not really a big difference here
 
 #do bootstrap simulation b/w populations that are endangered and not endangered
 StatDat <- read.csv("EndangermentStatusNFL2.csv", header=T) #loading the csv file with the endangerment statuses
@@ -301,6 +302,8 @@ head(StatDat)
 StatDat2 <- StatDat[order(StatDat$Code), ]
 head(StatDat2)
 View(StatDat2)
+alldat <- alldat[order(alldat$X), ]
+
 View(alldat) # now in the same order
 
 alldat$Status <- StatDat2$Status
@@ -456,7 +459,7 @@ for (i in 1:nrow(alldat)) {
 head(alldat) #my new column is populated, so now I can perform a logistic regression
 
 mod1<-glm(HWE.values2~ClimTrend, data=alldat, family=binomial(link="logit"))
-summary(mod1) # p=0.3516, not significant
+summary(mod1) # p=0.0675, not significant
 # endangered populations tend to be further south, so maybe we should try with latitude
 
 # Running a logistic regression with HWE deviations and latitude
@@ -552,14 +555,14 @@ palette(col.list)
 
 View(alldat)
 
-threatened <- alldat[which (alldat$Status == "Threatened"), ]
+threatened <- alldat[which (alldat$Status == "Threatened"), ] #making subset with only threatened pops
 nrow(threatened)
 
-leastcon <- alldat[which (alldat$Status == "Least Concern"), ]
+leastcon <- alldat[which (alldat$Status == "Least Concern"), ] #making subset with only least concern pops
 nrow(leastcon)
 
 dev.new(width=5, height=4)
-rastNFL <- plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F, box=F, axes=F) #plotting the newfoundland populations to get an idea of where they are 
+rastNFL <- plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F, box=F, axes=F) #plotting the newfoundland populations to get an idea of where the threatened populations are  
 rastNFL
 title("Newfoundland Populations", adj=0.75)
 points(cbind(threatened$Longitude, threatened$Latitude), col="black", cex=1, pch=4) #adding the points
@@ -567,9 +570,21 @@ points(cbind(leastcon$Longitude, leastcon$Latitude), col="black", cex=1, pch=16)
 legend("topright", legend=c("Threatened", "Least Concern"), pch=c(4, 16), col=c("black", "black"))
 dev.copy2pdf(file="NFLrastermap_status.pdf")
 
-plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F) #plotting the newfoundland populations to get an idea of where they are  
-points(cbind(alldat$Longitude, alldat$Latitude), col=alldat$HWE.values2 == 0, cex=1, pch=20)
-points(cbind(alldat$Longitude, alldat$Latitude), col=alldat$HWE.values2 == 1, cex=1, pch=17)
+#now plotting NFL populations to get an idea of where the deviants from HWE are
+#subsetting data into deviants and non-deviants
+deviate <- alldat[which(alldat$HWE.values2 == 0), ]
+nrow(deviate)
+nodeviate <- alldat[which(alldat$HWE.values2 == 1), ]
+nrow(nodeviate)
+
+rastNFL <- plot(rast$bio1, xlim=c(-65,-50), ylim=c(45,58), 1, main="", xaxt="n", yaxt="n", legend=F, box=F, axes=F)
+rastNFL #plotting the newfoundland populations to get an idea of where the pops that deviate from HWE are  
+title("Newfoundland Populations", adj=0.75)
+points(cbind(deviate$Longitude, deviate$Latitude), col="black", cex=1, pch=4) #adding the points
+points(cbind(nodeviate$Longitude, nodeviate$Latitude), col="black", cex=1, pch=16)
+legend("topright", legend=c("Deviation", "No Deviation"), pch=c(4, 16), col=c("black", "black"))
+
+dev.copy2pdf(file="NFLrastermap_devNFL.pdf")
 
 head(alldat)
 ```
