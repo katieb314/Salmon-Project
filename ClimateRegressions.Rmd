@@ -17,7 +17,7 @@ View(bigclim)
 bigclim2 <- data.frame(bigclim$code, bigclim$pastTemp, bigclim$CurTemp, bigclim$FutTemp) #taking only the columns I need
 bigclim3 <- bigclim2[order(bigclim2$bigclim.code), ] #reordering it by alphabetizing the populations codes (this is so that the data easily aligns to the HWE dataset)
 
-HWEvalues <- read.csv("HWEdat.csv") #downloading the HWE dataset that contains values for allelic richness, expected heterozygosity, and HWE p-values
+HWEvalues <- read.csv("Extracted_HWE.csv") #downloading the HWE dataset that contains values for allelic richness, expected heterozygosity, and HWE p-values
 View(HWEvalues)
 HWEvalues2 <- HWEvalues[order(HWEvalues$Populations), ] #reordering the populations by alphabetizing them so they line up with the climate dataset
 
@@ -124,7 +124,7 @@ library(ggplot2)
 
 #customizing a ggplot theme
 
-theme_katie<-function(base_size = 18, base_family = "Arial"){
+theme_katie<-function(base_size = 18, base_family = ""){
   theme_bw(base_size = base_size, base_family = base_family) %+replace% 
     theme(axis.text = element_text(size = rel(0.8),colour="black"),
           axis.ticks = element_line(colour = "black"),
@@ -139,19 +139,43 @@ theme_katie<-function(base_size = 18, base_family = "Arial"){
     )
 }
 
+install.packages("ggpmisc") #installing package that will allow me to put the p-values and R^2 values directly on the plots
+library(ggpmisc)
+
 ARbigLM <- ggplot(ARdrop, aes(y=Allelic.Richness, x=ClimTrend)) +
 	geom_point(colour="cyan3", size=5, alpha=0.6) +
-	geom_smooth(method=lm, colour="cyan4") +
+	#geom_smooth(method=lm, colour="cyan4") +
 	theme_katie() +
 	ylab("Allelic Richness") +
-	xlab("Trend in Annual Temperature over Time")
+	xlab("Trend in Annual Temperature over Time") +
+	stat_fit_glance(method="lm", geom="text", aes(label=paste0("p = ", round(..p.value.., 3))), label.x.npc = 0.8, label.y.npc = 0.2) +
+	stat_poly_eq(formula = ARdrop$Allelic.Richness ~ ARdrop$ClimTrend, 
+                aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
 print(ARbigLM)
+ggsave("AR_BIG.pdf")
+```
 
+```{r}
 
 #what if we log transform it?
 lmARlog <- lm(log10(Allelic.Richness) ~ log10(ClimTrend), data=alldat)
 print(lmARlog)
 summary(lmARlog) #p=0.0853
+
+ARlogLM <- ggplot(alldat, aes(y=log10(Allelic.Richness), x=log10(ClimTrend))) +
+	geom_point(colour="cyan3", size=5, alpha=0.6) +
+	geom_smooth(method=lm, colour="cyan4") +
+	theme_katie() +
+	ylab("Log of Allelic Richness") +
+	xlab("Trend in Annual Temperature over Time") +
+	stat_fit_glance(method="lm", geom="text", aes(label=paste0("p = ", round(..p.value.., 3))), label.x.npc = 0.8, label.y.npc = 0.2) +
+	stat_poly_eq(formula = log10(alldat$Allelic.Richness) ~ log10(alldat$ClimTrend), 
+                aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
+print(ARlogLM)
+ggsave("AR_BIG_log.pdf")
+```
+
+```{r}
 
 #boostrap simulation b/w populations with neg climate trend vs. pos clim trend?
 ## trying to find out if mean allelic richness is significantly different between pos and neg climate trends
@@ -199,7 +223,6 @@ qplot(BootOut) + theme_bw() + geom_vline(aes(xintercept=RawDiff), colour="blue")
 p <- sum(BootOut>RawDiff)/length(BootOut)
 paste("The estimated p-value is:", p) #p=0.512, so not really a big difference here
 
-#do bootstrap simulation b/w populations that are endangered and not endangered
 
 ```
 
@@ -244,7 +267,7 @@ summary(lmHE) # gives summary statistics, p=0.132, R^2=0.01496
 
 #what if we log transform it?
 lmHElog <- lm(log10(Expected.Het) ~ log10(ClimTrend), data=alldat)
-summary(lmHElog) #p=0.007319, R^2=0.06714-
+summary(lmHElog) #p=0.007319, R^2=0.06714- SIGNIFICANT!!
 
 #linear model without the outliers:
 lmHEdrop <- lm(Expected.Het ~ ClimTrend, data=HEdrop)
@@ -252,12 +275,32 @@ summary(lmHEdrop) #p=0.2817, R^2=0.008332
 
 HEbigLM <- ggplot(HEdrop, aes(x=ClimTrend, y=Expected.Het)) +
 	geom_point(colour="cyan3", size=5, alpha=0.6) +
-	geom_smooth(method=lm, colour="cyan4") +
+	#geom_smooth(method=lm, colour="cyan4") +
 	theme_katie() +
 	ylab("Expected Heterozygosity") +
-	xlab("Trend in Annual Temperature over Time")
+	xlab("Trend in Annual Temperature over Time") + 
+	stat_fit_glance(method="lm", geom="text", aes(label=paste0("p = ", round(..p.value.., 3))), label.x.npc = 0.8, label.y.npc = 0.2) +
+	stat_poly_eq(formula = HEdrop$Expected.Het ~ HEdrop$ClimTrend, 
+                aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
 print(HEbigLM)
+ggsave("HE_BIG.pdf")
 ```
+
+```{r}
+# Now plot the log of HE
+HElogLM <- ggplot(alldat, aes(y=log10(Expected.Het), x=log10(ClimTrend))) +
+	geom_point(colour="cyan3", size=5, alpha=0.6) +
+	geom_smooth(method=lm, colour="cyan4") +
+	theme_katie() +
+	ylab("Log of Expected Heterozygosity") +
+	xlab("Trend in Annual Temperature over Time") +
+	stat_fit_glance(method="lm", geom="text", aes(label=paste0("p = ", round(..p.value.., 3))), label.x.npc = 0.8, label.y.npc = 0.2) +
+	stat_poly_eq(formula = log10(alldat$Expected.Het) ~ log10(alldat$ClimTrend), 
+                aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
+print(HElogLM)
+ggsave("HE_BIG_log.pdf")
+```
+
 
 Maybe there is an interaction going on between multiple values. I'm going to run multiple regressions now:
 ```{r}
@@ -276,18 +319,35 @@ Then, we will see if there is a correlation between climate trends and deviation
 
 ```{r}
 # first, we will do a quick visualization with a scatterplot to see if there are any apparent trends:
-scatter.smooth(x=alldat$ClimTrend, y=alldat$HWE.values, main="Deviations from HWE vs. Temp Trends")
+scatter.smooth(x=alldat$ClimTrend, y=alldat$HWE.Values, main="Deviations from HWE vs. Temp Trends")
 # looks like there is no definitive relationship between temp trends and deviations from HWE...
 
 # Now I will quickly check for outliers in the data using a boxplot:
-boxplot(alldat$HWE.values, main="Deviations from HWE", sub=paste("Outlier rows: ", boxplot.stats(alldat$HWE.values)$out))
+boxplot(alldat$HWE.Values, main="Deviations from HWE", sub=paste("Outlier rows: ", boxplot.stats(alldat$HWE.Values)$out))
 #no outliers...
 
-range(alldat$HWE.values)
-hist(alldat$HWE.values) #looks like there are 2 groups of individuals, one that deviates from HWE, and one that does not - should do logistical regression for this
+range(alldat$HWE.Values)
+hist(alldat$HWE.Values) #looks like there are 2 groups of individuals, one that deviates from HWE, and one that does not - should do logistical regression for this
+
+# I'm going to make a nice histogram for the HWE p-values:
+HWE_hist <- ggplot(data=alldat, aes(HWE.Values)) + 
+	geom_histogram(breaks=seq(0, 1, by=0.05),
+								 col="cyan4", #fill="cyan3"
+								 aes(fill=..count..),
+								 alpha=0.8) +
+  scale_fill_gradient("Populations", low = "cyan1", high = "cyan3") +
+	theme_katie() +
+	labs(title = "Atlantic Canada") +
+	labs(x= "Hardy Weinberg Equilibrium P-values", y="Number of Populations") #+
+	#geom_density(col="cyan4")
+print(HWE_hist)
+ggsave("HWEhist_BIG.pdf")
+```
+
+```{r}
 
 #Now let's check for normality by doing a density plot
-plot(density(alldat$HWE.values), main= "Density Plot: Deviations from HWE", ylab="Frequency", 
+plot(density(alldat$HWE.Values), main= "Density Plot: Deviations from HWE", ylab="Frequency", 
 		 sub=paste("Skewness:", round(e1071::skewness(alldat$HWE.values), 2)))
 # bimodal distribution
 
@@ -299,7 +359,7 @@ head(alldat)
 
 #Making a loop to assign either a 0 or a 1 to the populations for my new column
 for (i in 1:nrow(alldat)) {
-	if (alldat$HWE.values[i] >= 0.05) {
+	if (alldat$HWE.Values[i] >= 0.05) {
 		alldat$HWE.values2[i] <- 1
 	} else {
 		alldat$HWE.values2[i] <- 0
@@ -336,11 +396,56 @@ StatusDat <- read.csv("EndangermentStatusNFL.csv")
 head(StatusDat)
 
 chisq.test(StatusDat$Status, alldat$HWE.values2)
+```
 
-#use logistic regression
+As with the Newfoundland dataset, these Hardy-Weinberg p-values also appear to be bimodally distributed - I'm going to plot these on a raster map
+
+```{r}
 #plot on map 
 
-head(bigclim)
+library(raster)
 
+rast <- getData("worldclim", var="bio", res=2.5) #making raster object, using biological variables, lowest resolution
+rast <- rast[[c(1)]] #taking out only the mean annual temperature variable (taken b/w 1950-2000)
+
+head(bigclim) #not in same order as alldat
+bigclim4 <- bigclim[order(bigclim$code), ]
+head(bigclim4) #now in the same order as alldat
+
+realcoords <- read.csv("mec12972-sup-0001-TableS1-S5.csv") #other dataset only has rounded lats/longs
+head(realcoords)
+realcoords2 <- realcoords[order(realcoords$code), ]
+head(realcoords2) #now in same order as alldat
+
+alldat$Latitude <- realcoords2$Latitude
+alldat$Longitude <- realcoords2$Longitude
+
+coords <- data.frame(x=alldat$Longitude, y=alldat$Latitude) #making dataframe for my lats and longs
+
+points <- SpatialPoints(coords, proj4string = rast@crs) #determining the datapoints by specifying my lat and long
+
+values <- extract(rast, points) #extracting the mean annual temperature for those lats and longs
+
+df <- cbind.data.frame(coordinates(points), values) #putting lat, long, and mean annual temp into a dataframe
+
+head(df) #this dataframe includes temperatures for all specific lats and longs for all populations
+
+projection(rast)=CRS("+init=epsg:4326") #want to make sure I'm using the right coordinate system
+
+deviate <- alldat[which(alldat$HWE.values2 == 0), ]
+nrow(deviate)
+nodeviate <- alldat[which(alldat$HWE.values2 == 1), ]
+nrow(nodeviate)
+
+range(alldat$Longitude) #-71.73 to -53.35
+range(alldat$Latitude) #43.86 to 58.82
+
+rastNFL <- plot(rast$bio1, xlim=c(-75,-50), ylim=c(40,60), 1, main="", xaxt="n", yaxt="n", legend=F, box=F, axes=F) #plotting the newfoundland populations to get an idea of where they are 
+rastNFL
+title("Atlantic Canada Populations", adj=0.75)
+points(cbind(deviate$Longitude, deviate$Latitude), col="black", cex=1, pch=4) #adding the points
+points(cbind(nodeviate$Longitude, nodeviate$Latitude), col="black", cex=1, pch=16)
+legend("topright", legend=c("Deviation", "No Deviation"), pch=c(4, 16), col=c("black", "black"))
+dev.copy2pdf(file="NFLrastermap_dev.pdf")
 ```
 
