@@ -9,7 +9,7 @@
 ##doi 10.1111/mec.13395 Transatlantic secondary contact in Atlantic salmon paper
 ##doi 10.1111/1755-0998.12157 NeEstimator V2: re-implementation of software for the estimation of contemporary effective population size (Ne) from genetic data
 
-## DOI 10.1002/joc.1276 Very high resolution interploted climate surfaces for global land ares
+## DOI 10.1002/joc.1276 Very high resolution interploted climate surfaces for global land ares  
 
 #DOI  10.1111/2041-210X.12067 diversity: and R package for estimation of pop genetics
 ##DOI 10.1093 PGD spider bioinformatics/article/28/2/298/198891
@@ -17,7 +17,7 @@
 # 10.1111/mec.12972. Conservation genomics  of anadromous Atlantic salmon
 
 
-dois = c('10.1111/2041-210X.12067','10.1093','')
+dois = c('10.1111/2041-210X.12067','10.1093','10.2305/IUCN','10.1002/joc.1276', '10.1111/mec.12972', '10.1111/2041-210X.12067', '10.1111/1755-0998.12157', '10.1111/mec.13395')
 
 
 poster_litcited = function(dois=""){
