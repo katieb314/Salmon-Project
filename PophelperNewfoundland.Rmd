@@ -1,0 +1,56 @@
+---
+title: "PophelperNewfoundland"
+author: "Lila Colston-Nepali"
+date: '2018-04-18'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Now we need to do this for the Newfoundland files
+
+```{r}
+# install dependencies and devtools
+install.packages(c("Cairo","ggplot2","gridExtra","gtable","tidyr","devtools"),dependencies=T)
+
+library(c(devtools, ggplot2, gridExtra, gtable, tidyr, devtools, Cairo))
+
+# install pophelper package from GitHub
+devtools::install_github('royfrancis/pophelper')
+
+# load library for use
+library(pophelper)
+
+#Make an object called myfiles that contains the relevant STRUCTURE output files
+myfiles1 <- readQStructure("STRUCTURE/NEWFOUNDLANDoutput/strucOut/run1")
+myfiles2 <- readQStructure("STRUCTURE/NEWFOUNDLANDoutput/strucOut/run2")
+
+myfiles <- c(myfiles1, myfiles2)
+
+#The next steps prepare the data to analyze best K
+tabulates <- tabulateQ(qlist = myfiles)
+summarized <- summariseQ(data = tabulates)
+
+# The Evanno method is a commonly accepted method to determine best K, this function calculates it
+evannoMethodStructure(summarized)
+```
+
+Now we can plot it! Best K was 12
+
+```{r}
+BESTK <- readQStructure("STRUCTURE/NEWFOUNDLANDoutput/strucOut/run1/newfoundlandstrucoutput12_f")
+
+#plotting
+
+NewfLab <- read.delim("STRUCTURE/NEWFOUNDLANDoutput/NEWLabels.txt",header=FALSE,stringsAsFactors=FALSE)
+
+plotQ(BESTK, showsp=F, clustercol = c("coral", "coral3", "burlywood1", "bisque1", "darksalmon", "indianred2", "lightcoral", "lightsalmon3", "sienna2", "salmon4", "tomato3", "tan1"),
+      showlegend = T, legendkeysize = 6, showyaxis = T, 
+      grplab = NewfLab, grplabsize = 1, linesize = 0.3, pointsize = 1, showdiv = FALSE,
+      grplabspacer = -0.2, grplabheight = 1, linetype = 1, font = "Arial", ordergrp = T)
+
+
+
+```
