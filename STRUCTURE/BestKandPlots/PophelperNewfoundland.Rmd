@@ -47,10 +47,8 @@ BESTK <- readQStructure("STRUCTURE/NEWFOUNDLANDoutput/strucOut/run1/newfoundland
 NewfLab <- read.delim("STRUCTURE/NEWFOUNDLANDoutput/NEWLabels.txt",header=FALSE,stringsAsFactors=FALSE)
 
 plotQ(BESTK, showsp=F, clustercol = c("coral", "coral3", "burlywood1", "bisque1", "darksalmon", "indianred2", "lightcoral", "lightsalmon3", "sienna2", "salmon4", "tomato3", "tan1"),
-      showlegend = T, legendkeysize = 6, showyaxis = T, 
+      showlegend = T, showyaxis = T, height = 4,
       grplab = NewfLab, grplabsize = 1, linesize = 0.3, pointsize = 1, showdiv = FALSE,
       grplabspacer = -0.2, grplabheight = 1, linetype = 1, font = "Arial", ordergrp = T)
-
-
 
 ```
