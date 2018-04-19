@@ -234,7 +234,7 @@ ARbigLM <- ggplot(ARdrop, aes(y=Allelic.Richness, x=ClimTrend)) +
                 aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
 # ARbigLM + geom_text(x = 0.6, y = 14, label = lm_eqn(ARdrop, ARdrop$Allelic.Richness, ARdrop$ClimTrend), parse = TRUE) --> this doesn't really match the style
 print(ARbigLM)
-ggsave("AR_NFL.pdf")
+ggsave("AR_NFL.pdf", width=7, height=5)
 ```
 
 
@@ -311,6 +311,33 @@ alldat$Status <- StatDat2$Status
 mod1 <- glm(Status~Allelic.Richness, data=alldat, family=binomial(link="logit"))
 summary(mod1) #p=0.671, not significant at all
 
+predicted<- predict(mod1,data=alldat('Allelic.Richness'=pred.x),type='response')
+predicted
+
+coefs <- coef(mod1)
+coefs[1]
+coefs[2]
+coefs
+y_plot <- plogis(coefs[1] + coefs[2] * alldat$Status)
+
+#predicted2<-predict(mod10,data=data.frame('Latitude'=pred.x),type='response')
+StatLogRes <- ggplot(alldat,aes(Status, Allelic.Richness)) + 
+	#geom_point() +
+	geom_boxplot() + 
+	#geom_line(aes(y=predicted), size=1, colour='blue') + 
+	#stat_smooth(method = "glm", family="binomial", formula = alldat$Status~alldat$Allelic.Richness, col=" blue") + 
+	#geom_line(alldat, aes(Status, Allelic.Richness), col="red") +
+	#geom_smooth(method = "glm", family = "binomial", se = TRUE, colour='cyan3', size=1.5, alpha = 0.3) +
+	ylab("Allelic Richness") +
+	xlab("Conservation Status") +
+	theme_katie() #+ 
+	#geom_line(aes(y=predicted2), size=1, colour='red')
+print(StatLogRes)
+ggsave("StatVsAR.pdf")
+```
+
+```{r}
+
 #adding status to ARdrop too
 ARdrop <- alldat[!(alldat$Allelic.Richness <= max(ARoutliers)),]
 #try without outliers
@@ -382,8 +409,8 @@ summary(lmHElog) #p=0.9855, R^2<0.001
 lmHEdrop <- lm(Expected.Het ~ ClimTrend, data=HEdrop)
 summary(lmHEdrop) #p=0.8872, R^2=0.000327
 
-mod4 <- glm(Status~Expected.Het, data=alldat, family=binomial(link="logit"))
-summary(mod4) #p=0.921, not significant
+#mod4 <- glm(Status~Expected.Het, data=alldat, family=binomial(link="logit"))
+#summary(mod4) #p=0.921, not significant
 
 HEdrop <- alldat[!(alldat$Expected.Het <= max(HEoutliers)),]
 
@@ -400,7 +427,7 @@ HEbigLM <- ggplot(HEdrop, aes(x=ClimTrend, y=Expected.Het)) +
 	stat_poly_eq(formula = HEdrop$Expected.Het ~ HEdrop$ClimTrend, 
                 aes(label = paste0(..rr.label..)), label.x.npc = 0.8, label.y.npc = 0.1, parse = TRUE)
 print(HEbigLM)
-ggsave("HE_NFL.pdf")
+ggsave("HE_NFL.pdf", width=7, height=5)
 
 ```
 
@@ -473,6 +500,9 @@ summary(mod3) #not significant
 #just longitude
 mod4 <- glm(HWE.values2~Longitude, data=alldat, family=binomial(link="logit"))
 summary(mod4) #0.238
+
+Status <- read.csv("EndangermentStatusNFL2.csv")
+head(Status)
 
 # What about if there is a relationship b/w deviations from HWE and endangerment status?
 M <- as.table(rbind(alldat$Status, alldat$HWE.values2))
