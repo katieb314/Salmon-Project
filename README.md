@@ -23,11 +23,11 @@ We used this to convert the Genepop files into STRUCTURE and IMMANC format for f
 
 Then we did a number of analyses:
 
-* We used the program diveRsity in R to measure allelic richness, expected heterozygosity, Hardy-Weinberg Equilibrium and pairwise GST. These scripts can be found ???
+* We used the program diveRsity in R to measure allelic richness, expected heterozygosity, Hardy-Weinberg Equilibrium and pairwise GST. These scripts can be found in the folder ***diveRsityAnalyses***
 
 * We used the program STRUCTURE to identify genetic clusters within the data. All of this code, output etc. can be found in the sub-folder ***STRUCTURE***
 
 * We attempted the program BayesAss to measure migration. Despite getting the program to run, we found that the output seemed to be problematic. Discussion with colleagues suggested that the program is highly problematic. So we sadly chose to not include this program in our analyses. The script used can be found in *bayesassproblems.txt*
 
-
+* The overall allelic richness, expected heterozygosity, Hardy-Weinberg Equilibrium and pairwise GST for each population was extracted. Then various statistical tests were used to see if there were significant differences for these values between the Big File and Newfoundland file. These values were also used in the climate analyses.
 
