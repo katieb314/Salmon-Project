@@ -1,0 +1,51 @@
+---
+title: "HWE extraction NFL"
+author: "Katie Birchard"
+date: '2018-04-11'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+After Lily ran diveRsity, she got an output file including multiple measures of genetic diversity. I want to extract Allelic Richness, expected heterozygosity, and HWE p-values from this output files so that I can analyze these measures with climate data.
+
+```{r}
+# first, I will open the output file in R
+HWE <- read.table("[divBasic]_HWENewfoundland.txt", header=F) #this time this code worked for me! Did not work in other file (HWE values for all populations) for some reason...
+View(HWE)
+
+#To extract the names of each observation
+
+HWEnamestest<- HWE[seq(1,nrow(HWE),8),] #picking out the rows with the names
+View(HWEnamestest)
+
+HWEnames <- HWEnamestest$V1 #picking out the column with the names
+View(HWEnames)
+
+# to extract the Values that we are interested in
+HWEvalues<- HWE[seq(8,nrow(HWE),8),] # this is extracting HWE p values
+View(HWEvalues)
+
+HWEar <- HWE[seq(5, nrow(HWE), 8),] # this is extracting allelic richness
+View(HWEar)
+
+HWEhet <- HWE[seq(7, nrow(HWE), 8),] #this is extracting expected heterozygosity
+
+#Now I want to make a dataframe to put the values I'm extracting into:
+
+HWEdat <- as.data.frame(matrix(ncol=4, nrow=nrow(HWEnamestest))) #making an empty dataframe to put the HWE info into
+HWEdat
+colnames(HWEdat) <- c("Populations", "Allelic Richness", "Expected Het", "HWE values") #naming the columns
+
+HWEdat$Populations <- HWEnames #putting population names into the first column
+HWEdat$`Allelic Richness` <- HWEar$V17 #putting ONLY overall allelic richness for each population into second column
+HWEdat$`Expected Het`<- HWEhet$V17 #overall expected heterozygosity into second column
+HWEdat$`HWE values` <- HWEvalues$V17 #overall HWE p values into last column
+
+head(HWEdat) #checking to make sure it all worked
+
+write.csv(HWEdat, file="HWEdatNFL2.csv") #writing into a new datafile that we can use for more analyses
+```
+
