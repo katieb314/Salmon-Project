@@ -1,0 +1,11 @@
+
+Keenan, K., McGinnity, P., Cross, T.F., Crozier, W.W. & Prodöhl, P.A. 2013. Methods in Ecology and Evolution 4: 782–788.
+Lischer, H.E.L. & Excoffier, L. 2011. Bioinformatics 28: 298–299.
+2015. IUCN Red List of Threatened Species, doi: 10.2305/iucn.uk.1996.rlts.t19855a9026693.en.
+Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G. & Jarvis, A. 2005. International Journal of Climatology 25: 1965–1978.
+Moore, J.-S., Bourret, V., Dionne, M., Bradbury, I., O’Reilly, P., Kent, M., et al. 2014. Molecular Ecology 23: 5680–5697.
+Keenan, K., McGinnity, P., Cross, T.F., Crozier, W.W. & Prodöhl, P.A. 2013. Methods in Ecology and Evolution 4: 782–788.
+Do, C., Waples, R.S., Peel, D., Macbeth, G.M., Tillett, B.J. & Ovenden, J.R. 2013. Molecular Ecology Resources 14: 209–214.
+Bradbury, I.R., Hamilton, L.C., Dempson, B., Robertson, M.J., Bourret, V., Bernatchez, L., et al. 2015. Molecular Ecology 24: 5130–5144.
+Stanley, R.R.E., DiBacco, C., Lowen, B., Beiko, R.G., Jeffery, N.W., Van Wyngaarden, M., et al. 2018. Science Advances 4: eaaq0929.
+FALUSH, D., STEPHENS, M. & PRITCHARD, J.K. 2007. Molecular Ecology Notes 7: 574–578.
